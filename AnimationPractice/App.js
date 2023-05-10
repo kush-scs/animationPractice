@@ -9,14 +9,11 @@ import {
 } from 'react-native';
 
 const App = () => {
-  const [timeout, setTimeout] = useState(0);
-
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnimOut = useRef(new Animated.Value(0)).current;
 
-  const timer = () => {
-    Animated.timing(fadeAnimOut, {
-      toValue: 1,
+  const fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
       duration: 5000,
       useNativeDriver: true,
     }).start();
@@ -34,13 +31,6 @@ const App = () => {
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
-  const spinReverse = fadeAnimOut.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['360deg', '0deg'],
-  });
-  useEffect(() => {
-    fadeIn();
-  }, []);
 
   const MINUTES_COUNT = 0.5;
   const [countDown, setCountDown] = useState(0);
@@ -71,77 +61,41 @@ const App = () => {
       setCountDown(0);
     }
   }, [countDown, runTimer]);
+
+  useEffect(() => {
+    fadeIn();
+    setTimeout(() => {
+      fadeOut();
+    }, 5000);
+  }, []);
   return (
     <SafeAreaView style={{flex: 1}}>
-      {countDown == 0 ? (
-        <Animated.View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignSelf: 'center',
-            opacity: fadeAnim, // Binds directly
-            transform: [
-              {
-                translateX: fadeAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.1, 300], // 0 : 150, 0.5 : 75, 1 : 0
-                  extrapolate: 'clamp',
-                }),
-              },
-              {
-                translateY: fadeAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 400], // 0 : 150, 0.5 : 75, 1 : 0
-                  // extrapolate: 'clamp',
-                }),
-              },
-              {
-                rotate: spin,
-              },
-            ],
-          }}>
-          <Image source={require('./theme/images/man.jpeg')} />
-          <View>
-            <Text style={{}}>
-              {minutes}:{seconds}
-            </Text>
-          </View>
-        </Animated.View>
-      ) : (
-        <Animated.View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignSelf: 'center',
-            opacity: fadeAnimOut, // Binds directly
-            transform: [
-              {
-                translateY: fadeAnimOut.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [400, 1], // 0 : 150, 0.5 : 75, 1 : 0
-                  // extrapolate: 'clamp',
-                }),
-              },
-              {
-                translateX: fadeAnimOut.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [300, 0.1], // 0 : 150, 0.5 : 75, 1 : 0
-                  extrapolate: 'clamp',
-                }),
-              },
-              {
-                rotate: spinReverse,
-              },
-            ],
-          }}>
-          <Image source={require('./theme/images/man.jpeg')} />
-          <View>
-            <Text style={{}}>
-              {minutes}:{seconds}
-            </Text>
-          </View>
-        </Animated.View>
-      )}
+      <Animated.View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignSelf: 'center',
+          opacity: fadeAnim, // Binds directly
+          transform: [
+            {
+              translateX: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [300, 0.1], // 0 : 150, 0.5 : 75, 1 : 0
+              }),
+            },
+            {
+              translateY: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [400, 1], // 0 : 150, 0.5 : 75, 1 : 0
+              }),
+            },
+            {
+              rotate: spin,
+            },
+          ],
+        }}>
+        <Image source={require('./theme/images/man.jpeg')} />
+      </Animated.View>
     </SafeAreaView>
   );
 };
